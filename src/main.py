@@ -15,17 +15,7 @@ def probe(port: str, baudrate: int):
         print(e)
         exit(1)
 
-def main(args):
-    g = Gauge('cpm_value', 'Counts per minute')
-    start_http_server(args.port, addr=args.addr)
-    print(f"HTTP server started on http://{args.addr}:{args.port}")
-    while True:
-        cpm_value = probe(args.serial_port, args.baudrate)
-        g.set(cpm_value)
-        print(cpm_value)
-        sleep(args.delay)
-
-if __name__ == '__main__':
+def main():
     p = argparse.ArgumentParser()
     p.add_argument(
         '-p', '--port', required=False,
@@ -59,4 +49,14 @@ if __name__ == '__main__':
         type=str, default="/dev/ttyUSB0"
     )    
     args = p.parse_args()
-    main(args)
+    g = Gauge('cpm_value', 'Counts per minute')
+    start_http_server(args.port, addr=args.addr)
+    print(f"HTTP server started on http://{args.addr}:{args.port}")
+    while True:
+        cpm_value = probe(args.serial_port, args.baudrate)
+        g.set(cpm_value)
+        print(cpm_value)
+        sleep(args.delay)
+
+if __name__ == '__main__':
+    main()
